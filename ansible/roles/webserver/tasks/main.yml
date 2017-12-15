@@ -2,7 +2,7 @@
 
 - name: Install httpd
   yum:
-    name: {{ package }}
+    name: "{{ package }}"
     state: present
 
 - name: get the machine hostname
@@ -15,6 +15,6 @@
     regexp: "{{ item.regexp }}"
     replace: "{{ item.replace }}"
   with_items:
-  - { regexp: 'Listen', replace: '{{ hostname.stdout_lines[0] }}:80'}
-  notify:
-    - action to start httpd service
+  - { regexp: 'Listen 80', replace: 'Listen {{ hostname.stdout_lines[0] }}:80'}
+- copy: src=index.html dest=/var/www/html mode=0755
+- service: name=httpd state=started
