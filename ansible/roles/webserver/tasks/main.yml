@@ -1,0 +1,20 @@
+---
+
+- name: Install httpd
+  yum:
+    name: {{ package }}
+    state: present
+
+- name: get the machine hostname
+  command: hostname -i
+  register: hostname
+
+- name: Update the config file
+  replace:
+    dest: /etc/httpd/conf/httpd.conf
+    regexp: "{{ item.regexp }}"
+    replace: "{{ item.replace }}"
+  with_items:
+  - { regexp: 'Listen', replace: '{{ hostname.stdout_lines[0] }}:80'}
+  notify:
+    - action to start httpd service
